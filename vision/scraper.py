@@ -20,14 +20,14 @@ class ImageScraper:
         self.urls = []
         self.term = ""
 
-    # build_url :: (String, Int) -> String
     # return links from page `idx` of google images
+    #   build_url : (String, Int) -> String
     def build_url(self, term, idx):
         term1 = re.sub('\s', '+', term).lower()
         return "http://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=" \
             + term1 + "&start=" + str(idx)
 
-    # search :: (String, Int) -> [URL]
+    #   search : (String, Int) -> [URL]
     def search(self, term, pages=10):
         self.term = term
         for idx in range(0,pages):
@@ -37,13 +37,13 @@ class ImageScraper:
             self.urls += map(lambda x: x['unescapedUrl'], goog_json)
 
     # downloads the list of image urls to disk
-    # download :: (Int) -> IO ()
+    #   download : (Int) -> IO ()
     def download(self):
         # assert(items <= len(self.urls) and items > -1)
         tdir = TMPD+'/'+self.term
         os.mkdir(tdir)
 
-        # download1 :: (Int, URL) -> IO ()
+        #   download1 : (Int, URL) -> IO ()
         def download1(id_url):
             id  = id_url[0]
             url = id_url[1]

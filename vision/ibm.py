@@ -2,14 +2,14 @@ import requests, json
 from pprint import pprint
 from nltk.corpus import wordnet as wn
 
-class ServiceConnect:
+class WatsonConnect:
     "Read Watson API account data from JSON."
     creds = None
 
     # type service
     services = ["visual_recognition", "concept_expansion", "speech_to_text"]
 
-    # __init__ :: (Service, ?servPath) -> ()
+    #   __init__ : (Service, ?servPath) -> ()
     def __init__(self, service, servPath=''):
         if self.creds == None:
             try:
@@ -28,9 +28,9 @@ class ServiceConnect:
 class VisualRecog:
     "Wrapper around the Watson visual-recognition service"
     def __init__(self):
-        self.vr = ServiceConnect('visual_recognition')
+        self.vr = WatsonConnect('visual_recognition')
 
-    # recognize :: imgPath -> Maybe [(String, Float)]
+    #   recognize : imgPath -> Maybe [(String, Float)]
     def recognize(self, imgPath):
         reqs = requests.post(url=self.vr.url + '/v1/tag/recognize',
                              auth=self.vr.auth,
@@ -44,21 +44,21 @@ class VisualRecog:
 
 # c = VisualRecog()
 # pprint(c.recognize('food.jpg'))
-# =>
+# ===>
 # {u'images': [{u'image_id': u'0',
 #               u'image_name': u'food.jpg',
 #               u'labels': [{u'label_name': u'Graphics',
 #                            u'label_score': u'0.584123'}]}]}
 
 # Find related words. Only nouns by default.
-# related_words : (word, ?WordTypes) -> [word]
+#   related_words : (word, ?WordTypes) -> [word]
 def related_words(word, typeof=['n']):
     return list(set([s.name().split('.')[0] for s in wn.synsets(word)
                      if len(wn.synsets(word)) > 0
                      and s.name.split('.')[1] in typeof]))
 
 # Is the current image a match according to Watson?
-# is_match_watson : (word, Maybe [(String,Float)], ?conf_lvl) -> Bool
+#   is_match_watson : (word, Maybe [(String,Float)], ?conf_lvl) -> Bool
 def is_match_watson(word, labels, conf_lvl=0.5):
     if labels == None: return False
     rels = related_words(word)
@@ -67,5 +67,4 @@ def is_match_watson(word, labels, conf_lvl=0.5):
         len(filter (lambda x: x[0] in intersect and \
                     x[1] >= conf_lvl, labels)) > 0:
         return True
-    else:
-        return False
+    else: return False
