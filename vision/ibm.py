@@ -37,7 +37,7 @@ class VisualRecog:
                              files={'img_File': open(imgPath, 'rb')},
                              stream=True).json()
         if 'labels' in reqs['images'] and reqs['images']['labels'] != []:
-            return map(lambda x: (x['label_name'], x['label_score']),
+            return map(lambda x: (x['label_name'], float(x['label_score'])),
                         reqs['images']['labels'])
         else: return None
 
