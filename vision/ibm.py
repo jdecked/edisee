@@ -1,6 +1,9 @@
 import requests, json
+import numpy as np
+import cv2
 from pprint import pprint
 from nltk.corpus import wordnet as wn
+import mraa
 
 class WatsonConnect:
     "Read Watson API account data from JSON."
@@ -32,13 +35,13 @@ class VisualRecog:
 
     #   recognize : imgPath -> Maybe [(String, Float)]
     def recognize(self, imgPath):
-        reqs = requests.post(url=self.vr.url + '/v1/tag/recognize',
+        res = requests.post(url=self.vr.url + '/v1/tag/recognize',
                              auth=self.vr.auth,
                              files={'img_File': open(imgPath, 'rb')},
                              stream=True).json()
-        if 'labels' in reqs['images'] and reqs['images']['labels'] != []:
+        if 'labels' in res['images'] and res['images']['labels'] != []:
             return map(lambda x: (x['label_name'], float(x['label_score'])),
-                        reqs['images']['labels'])
+                        res['images']['labels'])
         else: return None
 
 
@@ -68,3 +71,5 @@ def is_match_watson(word, labels, conf_lvl=0.5):
                     x[1] >= conf_lvl, labels)) > 0:
         return True
     else: return False
+
+#
